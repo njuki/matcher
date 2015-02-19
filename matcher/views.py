@@ -521,9 +521,9 @@ def jobDetails(request, pk):
                 try:
                     job = Jobs.objects.all().get(jobid=pk)
                 except:
-                    seekerprofile = None
+                    job = None
                 
-                return render_to_response('jobseeker/adminview.html', {'user': request.user, 'seekerprofile': seekerprofile})
+                return render_to_response('jobs/adminview.html', {'user': request.user, 'job': job})
 
 
 @login_required

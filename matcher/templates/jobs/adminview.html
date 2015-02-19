@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Job Details{% endblock %}
+
+{% block content %}
+
+{%  if job %}
+
+ <h3 class="text-success">Job Details</h3>
+ <table class="table table-striped">
+    <tr class="default"><th>Company</th><td>{{ job.companyid.companyname }}</td></tr>
+    <tr class="default"><th>Title</th><td>{{ job.title }}</td></tr>
+    <tr class="default"><th>Summary</th><td>{{ job.shortdescription }}</td></tr>
+    <tr class="default"><th>No of vacancies</th><td>{{ job.openingsavailable }}</td></tr>
+    <tr class="default"><th>Closing Date</th><td>{{ job.deadline }}</td></tr>
+    <tr class="default"><th>Years of Experience</th><td>{{ job.yearsofexperience }}</td></tr>
+    <tr class="default"><th>Education Level</th><td>{{ job.educationid.name }}</td></tr>
+    <tr class="default"><th>Skill set</th><td>{{ job.skills }}</td></tr>
+    <tr class="default"><th>Job Details</th><td>{{ job.detaileddescription }}</td></tr>
+</table>
+
+{%  else %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Warning! </strong>Details not found.
+</div>
+{%  endif %}
+
+{% endblock %}
