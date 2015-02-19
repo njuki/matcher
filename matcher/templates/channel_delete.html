@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Delete Industry</h1>
+
+<p>Are you sure you want to delete the channel {{ channels.name }}?</p>
+
+<form action="{% url "channels_delete"  channels.pk %}" method="POST">
+  {% csrf_token %}
+
+  <input type="submit" value="Yes, delete." class="btn btn-success"/>
+  <a href="{% url "channels_index" %}" class="btn btn-warning">No, cancel.</a>
+</form>
+
+{% endblock %}

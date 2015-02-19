@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Industries Listing{% endblock %}
+
+{% block content %}
+<div class="row">
+        <div class="col-lg-10">
+<h3>Messaging Channels</h3></div>
+      <div class="col-lg-2"> <p><a class="btn btn-info new-btn" href="/matcher/channels/create">Create New Channel</a></p>
+          </div>
+      </div>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Date Created</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    {% for channel in object_list %}
+        <tr>
+            <td>{{ channel.channelid }}</td>
+            <td>{{ channel.name }}</td>
+            <td>{{ channel.description }}</td>
+            <td>{{ channel.datecreated }}</td>
+            <td><a href="{% url 'channels_edit' channel.channelid %}" class="btn">Edit</a></td>
+            <td><a href="{% url 'channels_delete' pk=channel.channelid %}" class="btn">Delete</a></td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

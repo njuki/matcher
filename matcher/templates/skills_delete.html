@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Delete Skillset</h1>
+
+<p>Are you sure you want to delete the skillset {{ skillset.name }}?</p>
+
+<form action="{% url "skills_delete"  skillset.pk %}" method="POST">
+  {% csrf_token %}
+
+  <input type="submit" value="Yes, delete." class="btn btn-success"/>
+  <a href="{% url "skills_index" %}" class="btn btn-warning">No, cancel.</a>
+</form>
+
+{% endblock %}

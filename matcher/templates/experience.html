@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Work Experience Listing{% endblock %}
+
+{% block content %}
+<div class="row">
+        <div class="col-lg-10">
+<h3>Work Experience Listing</h3></div>
+      <div class="col-lg-2"> <p><a class="btn btn-info new-btn" href="/matcher/experience/create">Create Experience Level</a></p>
+          </div>
+      </div>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    {% for experience in object_list %}
+        <tr>
+            <td>{{ experience.experienceid }}</td>
+            <td>{{ experience.name }}</td>
+             <td>{{ experience.description }}</td>
+            <td><a href="{% url 'experience_edit' experience.experienceid %}" class="btn">Edit</a></td>
+            <td><a href="{% url 'experience_delete' experience.experienceid %}" class="btn">Delete</a></td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

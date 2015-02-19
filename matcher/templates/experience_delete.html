@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Delete Experience Level</h1>
+
+<p>Are you sure you want to delete the job type {{ experiencelevel.name }}?</p>
+
+<form action="{% url "experience_delete"  experiencelevel.pk %}" method="POST">
+  {% csrf_token %}
+
+  <input type="submit" value="Yes, delete." class="btn btn-success"/>
+  <a href="{% url "experience_index" %}" class="btn btn-warning">No, cancel.</a>
+</form>
+
+{% endblock %}

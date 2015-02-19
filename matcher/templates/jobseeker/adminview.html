@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Industries Listing{% endblock %}
+
+{% block content %}
+
+{%  if seekerprofile %}
+
+ <h3 class="text-success">Jobseeker Details</h3>
+ <table class="table table-striped">
+    <tr class="default"><th>First Name</th><td>{{ seekerprofile.firstname }}</td></tr>
+    <tr class="default"><th>Last Name</th><td>{{ seekerprofile.lastname }}</td></tr>
+    <tr class="default"><th>Email</th><td>{{ seekerprofile.userid.emailaddress }}</td></tr>
+    <tr class="default"><th>Mobile Number</th><td>{{ seekerprofile.mobilenumber }}</td></tr>
+    <tr class="default"><th>Gender</th><td>{{ seekerprofile.gender }}</td></tr>
+    <tr class="default"><th>Marital Status</th><td>{{ seekerprofile.gender }}</td></tr>
+    <tr class="default"><th>Years of Experience</th><td>{{ seekerprofile.yearsofexperience }}</td></tr>
+    <tr class="default"><th>Education Level</th><td>{{ seekerprofile.educationid.name }}</td></tr>
+    <tr class="default"><th>Skill set</th><td>{{ seekerprofile.skills }}</td></tr>
+    <tr class="default"><th>Expected Salary</th><td>{{ seekerprofile.expectedsalary }}</td></tr>
+    <tr class="default"><th>Curriculum Vitae</th><td><a href="{{ seekerprofile.cv.url }}">{{ seekerprofile.cv }}</td></tr>
+    <tr class="default"><th>Summary of Self</th><td>{{ seekerprofile.profiledescription }}</td></tr>
+</table>
+
+{%  else %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Warning! </strong>Details not found.
+</div>
+{%  endif %}
+
+{% endblock %}

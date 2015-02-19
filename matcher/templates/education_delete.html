@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Delete Education Level</h1>
+
+<p>Are you sure you want to delete the education level {{ education.name }}?</p>
+
+<form action="{% url "education_delete"  education.pk %}" method="POST">
+  {% csrf_token %}
+
+  <input type="submit" value="Yes, delete." class="btn btn-success"/>
+  <a href="{% url "education_index" %}" class="btn btn-warning">No, cancel.</a>
+</form>
+
+{% endblock %}

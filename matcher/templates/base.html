@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/static/images/duma.png">
+
+    <title>Duma Works :: Job Matcher</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <linK href="/static/css/custom.css" rel="stylesheet">
+    <linK href="/static/css/datepicker.css" rel="stylesheet">
+	<linK href="/static/css/chosen.css" rel="stylesheet">
+    <style type="text/css">
+      /* Move down content because we have a fixed navbar that is 50px tall */
+      body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+      }
+    </style>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/static/js/html5shiv.js"></script>
+      <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/matcher/home"><img src="/static/images/logo.png" style="width: 300px;"/></a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+          {% if user.is_authenticated %}
+          {% if user.is_staff %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administrative Tools <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/matcher/industries">Industries</a></li>
+                <li><a href="/matcher/jobTypes">Job Types</a></li>
+                <li><a href="/matcher/channels">Message Channels</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Qualification Settings</li>
+                <li><a href="/matcher/qualificationparams">Qualification Params</a></li>
+                <li><a href="/matcher/education">Education Level</a></li>
+                <li><a href="/matcher/skills">Skill set</a></li>
+                <li><a href="/matcher/experience">Work Experience</a></li>
+              </ul>
+            </li>
+            <li><a href="/matcher/users">Users</a></li>
+            <li><a href="/matcher/companies">Companies</a></li>
+            <li><a href="/matcher/jobseekers">Job Seekers</a></li>
+           {% endif %}
+            <li><a href="{% url 'jobslist_view' %}">Job Postings</a></li>
+           {% endif %}
+          </ul>
+      	<div class="navbar-right">
+      	  {% if user.is_authenticated %}
+      <ul class="nav navbar-nav">
+      <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="text-warning">{{ user }}<b class="caret"></b></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'django.contrib.auth.views.password_change' %}">Change Password</a></li>
+                  {% if matchUser.usertype == 1 %}
+                   <li><a href="{% url 'profile' %}">My Profile</a></li>
+                  {% endif %}
+                <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
+              </ul>
+            </li>
+      </ul>
+       {% endif %}
+      {% if user.is_anonymous %}
+      <div class="navbar-form">
+      <a href="{% url 'django.contrib.auth.views.login' %}"  class="btn btn-success">login</a>
+      &nbsp;&nbsp;&nbsp; <a href="{% url 'register' %}" class="btn btn-warning">Register</a>
+      </div>
+      {% endif %}
+    </div>
+        </div>
+        </div><!--/.navbar-collapse -->
+      </div>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+      {% block content %}{% endblock %}
+          </div>
+    </div>
+
+    <div class="container">
+    
+      <hr>
+
+      <footer>
+        <p>&copy; DumaWorks {% now "Y" %}</p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+     <script src="/static/js/bootstrap-datepicker.js"></script>
+     <script src="/static/js/chosen.jquery.js"></script>
+ <script>
+ $('.datepicker').datepicker({
+	    format: 'yyyy-mm-dd',
+	})
+  </script>
+  <script type="text/javascript">
+    var config = {
+      '.selectfilter'           : {},
+      '.selectfilter-deselect'  : {allow_single_deselect:true},
+      '.chosen-select-no-single' : {disable_search_threshold:10},
+      '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
+      '.chosen-select-width'     : {width:"95%"}
+    }
+    for (var selector in config) {
+      $(selector).chosen(config[selector]);
+    }
+  </script>
+  </body>
+</html>

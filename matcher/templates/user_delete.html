@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Delete User</h1>
+
+<p>Are you sure you want to delete the user {{ users.firstname}} {{ users.lastname }}?</p>
+
+<form action="{% url "users_delete"  users.pk %}" method="POST">
+  {% csrf_token %}
+
+  <input type="submit" value="Yes, delete." class="btn btn-success"/>
+  <a href="{% url "users_index" %}" class="btn btn-warning">No, cancel.</a>
+</form>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Industries Listing{% endblock %}
+
+{% block content %}
+<div class="row">
+        <div class="col-lg-10">
+<h3>Industry Listing</h3></div>
+      <div class="col-lg-2"> <p><a class="btn btn-info new-btn" href="/matcher/industries/create">Create New Industry</a></p>
+          </div>
+      </div>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Industry Name</th>
+        <th>Description</th>
+        <th>Date Created</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    {% for industry in object_list %}
+        <tr>
+            <td>{{ industry.industryid }}</td>
+            <td>{{ industry.industryname }}</td>
+            <td>{{ industry.industrydescription }}</td>
+            <td>{{ industry.datecreated }}</td>
+            <td><a href="{% url 'industry_edit' industry.industryid %}" class="btn">Edit</a></td>
+            <td><a href="{% url 'industry_delete' pk=industry.industryid %}" class="btn">Delete</a></td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

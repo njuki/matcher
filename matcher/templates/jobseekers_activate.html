@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Unblock Job Seeker</h1>
+
+<p>Are you sure you want to activate  {{ jobseekers.firstname }}?</p>
+
+<form action="{% url "seeker_activate"  jobseekers.pk %}" method="POST">
+  {% csrf_token %}
+
+  <input type="submit" value="Yes, unblock" class="btn btn-success"/>
+  <a href="{% url "jobseekers_index" %}" class="btn btn-warning">No, cancel.</a>
+</form>
+
+{% endblock %}

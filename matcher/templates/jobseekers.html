@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Jobseekers Listing{% endblock %}
+
+{% block content %}
+<div class="row">
+        <div class="col-lg-10">
+<h3>Jobseekers Listing</h3></div>
+      <div class="col-lg-2"> <p><a class="btn btn-info new-btn" href="/matcher/industries/create">Create New Industry</a></p>
+          </div>
+      </div>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Mobile Number</th>
+        <th>Years of Experience</th>
+        <th>Status </th>
+        <th>Education</th>
+        <th>Expected Salary</th>
+        <th>View</th>
+        <th>Deactivate</th>
+    </tr>
+    {% for seeker in object_list %}
+        <tr>
+            <td>{{ seeker.firstname }} {{ seeker.lastname }}</td>
+            <td>{{ seeker.userid.emailaddress }}</td>
+            <td>{{ seeker.mobilenumber }}</td>
+            <td>{{ seeker.yearsofexperience }}</td>
+            <td>{% if seeker.get_status_display == "Active" %}<span class="label label-success"> {% else %} <span class="label label-danger"> {% endif %} {{ seeker.get_status_display }} </span></td>
+            <td>{{ seeker.educationid.name }}</td>
+            <td>{{ seeker.expectedsalary }}</td>
+            <td><a href="{% url 'seeker_view' seeker.jobseekerid %}" class="label label-success">View Details</a></td>
+            <td>
+            {% if seeker.get_status_display == "Active" %}
+            <a href="{% url 'seeker_deactivate' pk=seeker.jobseekerid %}" class="label label-danger">Deactivate</a>
+             {% else %}
+             <a href="{% url 'seeker_activate' pk=seeker.jobseekerid %}" class="label label-warning">Activate</a>
+            {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
