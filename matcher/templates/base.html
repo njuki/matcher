@@ -60,7 +60,7 @@
               </ul>
             </li>
             <li><a href="/matcher/users"><span class="glyphicon glyphicon-user"></span> Users</a></li>
-            <li><a href="/matcher/companies"><span class="glyphicon glyphicon-folder-close"></span> Companies</a></li>
+            <li><a href="{% url 'company_list' %}"><span class="glyphicon glyphicon-folder-close"></span> Companies</a></li>
             <li><a href="/matcher/jobseekers"><span class="glyphicon glyphicon-hdd"></span> Job Seekers</a></li>
            {% endif %}
             <li><a href="{% url 'jobslist_view' %}"><span class="glyphicon glyphicon-bell"></span> Job Postings</a></li>

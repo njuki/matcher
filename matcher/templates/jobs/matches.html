@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Job Matches{% endblock %}
+
+{% block content %}
+
+ {% if candidates %}
+ <h3 class="text-success"><medium class="text-success">Below candidates have matched the job description:</medium></h3>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Mobile Number</th>
+        <th>Years of Experience</th>
+        <th>Education</th>
+        <th>Expected Salary</th>
+    </tr>
+    {% for candidate in candidates %}
+        <tr>
+            <td>{{ candidate.firstname }} {{ candidate.lastname }}</td>
+            <td>{{ candidate.userid.emailaddress }}</td>
+            <td>{{ candidate.mobilenumber }}</td>
+            <td>{{ candidate.yearsofexperience }}</td>
+            <td>{{ candidate.educationid.name }}</td>
+            <td>{{ candidate.expectedsalary }}</td>
+         </tr>
+         
+    {% endfor %}
+</table>
+
+    <div id="register">
+        <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if err %}
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Error! </strong>{{ err }}.
+</div>
+    
+{% endif %}
+    {% for field in form %}
+        <div class="control-group">       
+        <label class="control-label">{{ field.label_tag }}</label>
+        <div class="controls">{{ field }}</div>
+        {% if field.errors %}
+        <span class="text-danger">{{ field.errors }}</span>
+        {% endif %}
+        </div>
+    {% endfor %}
+    <br/>
+    <input type="submit" value="Send Message" class="btn btn-success" />
+</form>
+    </div>
+
+
+
+
+
+
+
+
+{%  else %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Oops! </strong>No candidate found for the job post
+</div>
+{%  endif %}
+
+
+
+
+{%  if job %}
+<div class="row">
+        <div class="col-lg-10">
+ <h3 class="text-success">Job Details</h3>
+ </div>
+ <table class="table table-striped">
+    <tr class="default"><th>Company</th><td>{{ job.companyid.companyname }}</td></tr>
+    <tr class="default"><th>Title</th><td>{{ job.title }}</td></tr>
+    <tr class="default"><th>Summary</th><td>{{ job.shortdescription }}</td></tr>
+    <tr class="default"><th>No of vacancies</th><td>{{ job.openingsavailable }}</td></tr>
+    <tr class="default"><th>Closing Date</th><td>{{ job.deadline }}</td></tr>
+    <tr class="default"><th>Years of Experience</th><td>{{ job.yearsofexperience }}</td></tr>
+    <tr class="default"><th>Education Level</th><td>{{ job.educationid.name }}</td></tr>
+    <tr class="default"><th>Skill set</th><td>{{ job.skills }}</td></tr>
+    <tr class="default"><th>Job Details</th><td>{{ job.detaileddescription }}</td></tr>
+</table>
+
+{%  else %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Warning! </strong>Details not found.
+</div>
+{%  endif %}
+
+{% endblock %}

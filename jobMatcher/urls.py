@@ -5,6 +5,8 @@ from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse
 from django.contrib import admin
 from django.contrib.auth.forms import AdminPasswordChangeForm
+from smslogger import views
+
 admin.autodiscover()
 
 
@@ -27,7 +29,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # catch all, redirect to matcher home view
+    url(r'^sms', views.incomingsms),
     url(r'^', RedirectView.as_view(url='/matcher/home')),
+	
      
 
 )

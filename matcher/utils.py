@@ -50,7 +50,7 @@ class LoginRequiredMixin(object):
 
 def getCurrentUser(userid):
     try:
-        user = Users.objects.all().get(authid=userid)
+        user = Users.objects.get(authid=userid)
     except:
         user = None
     return user

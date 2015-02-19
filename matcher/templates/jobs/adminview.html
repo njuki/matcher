@@ -5,8 +5,17 @@
 {% block content %}
 
 {%  if job %}
-
+<div class="row">
+        <div class="col-lg-10">
  <h3 class="text-success">Job Details</h3>
+ </div>
+{% if user.is_staff %}
+{% if not shortlisted %}
+      <div class="col-lg-2"> <p><a class="btn btn-info new-btn" href="{% url 'match_job' job.jobid %}">Match this Job</a></p>
+          </div>      
+          {% endif %}
+          {% endif %}
+          </div>
  <table class="table table-striped">
     <tr class="default"><th>Company</th><td>{{ job.companyid.companyname }}</td></tr>
     <tr class="default"><th>Title</th><td>{{ job.title }}</td></tr>
@@ -26,4 +35,37 @@
 </div>
 {%  endif %}
 
+
+ {% if shortlisted %}
+ <h3 class="text-success"><medium class="text-success"> Contacted candidates:</medium></h3>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Mobile Number</th>
+        <th>Years of Experience</th>
+        <th>Education</th>
+        <th>Expected Salary</th>
+        <th>Matched By</th>
+    </tr>
+    {% for candidate in shortlisted %}
+        <tr>
+            <td>{{ candidate.jobseekerid.firstname }} {{ candidate.jobseekerid.lastname }}</td>
+            <td>{{ candidate.jobseekerid.userid.emailaddress }}</td>
+            <td>{{ candidate.jobseekerid.mobilenumber }}</td>
+            <td>{{ candidate.jobseekerid.yearsofexperience }}</td>
+            <td>{{ candidate.jobseekerid.educationid.name }}</td>
+            <td>{{ candidate.jobseekerid.expectedsalary }}</td>
+            <td>{{ candidate.generatedbyuserid.firstname }} {{ candidate.generatedbyuserid.lastname }}</td>
+         </tr>
+         
+    {% endfor %}
+</table>
+
+{%  else %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Note! </strong>Matching hasn't been done on this job.
+</div>
+{%  endif %}
 {% endblock %}

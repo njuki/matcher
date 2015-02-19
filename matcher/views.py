@@ -13,6 +13,8 @@ from django.conf import settings  # import the settings file
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+import uuid
 
 # import generic views
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
@@ -135,7 +137,7 @@ class UsersCreate(CreateView):
             email.send()
             return super(UsersCreate, self).form_valid(form_class) 
         except Exception, e:
-            #raise Http404("Error Creating Account. Please try again or contact the administrator" + str(e))
+            # raise Http404("Error Creating Account. Please try again or contact the administrator" + str(e))
             return render_to_response('create.html', {'form':form_class, 'user': self.request.user, 'err': str(e)})
    
 
@@ -206,9 +208,13 @@ class JobSeekersCreate(CreateView):
         form.fields['skills'] = forms.ModelMultipleChoiceField(queryset=Skillset.objects.all(), widget=FilteredSelectMultiple("", is_stacked=False))
         return form
     def form_valid(self, form_class):
-        user = utils.getCurrentUser(self.request.user.pk)
+        user = getCurrentUser(self.request.user.pk)
         user.profilecompleted = 1
         user.save()
+        #form.cleaned_data['firstname']
+        z = str(form_class.cleaned_data['skills'])
+        ll = z.replace('[','').replace('<','').replace('Skillset: ','').replace(']','').replace('>','')
+        form_class.instance.skills = ll
         form_class.instance.userid = user
         return super(JobSeekersCreate, self).form_valid(form_class) 
 
@@ -226,7 +232,13 @@ class UpdateJobSeekers(UpdateView):
         
         form.fields['skills'] = forms.ModelMultipleChoiceField(queryset=Skillset.objects.all(), widget=FilteredSelectMultiple("", is_stacked=False))
         return form
-
+    
+    def form_valid(self, form_class):
+        z = str(form_class.cleaned_data['skills'])
+        ll = z.replace('[','').replace('<','').replace('Skillset: ','').replace(']','').replace('>','')
+        form_class.instance.skills = ll
+        
+        return super(UpdateJobSeekers, self).form_valid(form_class) 
     
 class DeleteJobSeekers(DeleteView):
     model = JobSeekers
@@ -242,20 +254,20 @@ class DeactivateJobSeekers(View):
     
     def get(self, request, pk, *args, **kwargs):
         seekerprofile = JobSeekers.objects.all().get(jobseekerid=pk)
-        return TemplateResponse(request, self.template_name,{'jobseekers': seekerprofile})
+        return TemplateResponse(request, self.template_name, {'jobseekers': seekerprofile})
     
     def post(self, request, pk, *args, **kwargs):
         seekerprofile = JobSeekers.objects.all().get(jobseekerid=pk)
         seekerprofile.status = 2
         seekerprofile.save()
         
-        #deactivate the user attached to the jobseeker profile
+        # deactivate the user attached to the jobseeker profile
         matcher_user = Users.objects.all().get(userid=seekerprofile.userid.userid)
-        #matcher_user.authid.is_active = 0
+        # matcher_user.authid.is_active = 0
         User.objects.filter(pk=matcher_user.authid.id).update(is_active=0)
-        #return HttpResponse(pk)
+        # return HttpResponse(pk)
         return HttpResponseRedirect('/matcher/jobseekers')
-        #return TemplateResponse(request, self.template_nam,{}
+        # return TemplateResponse(request, self.template_nam,{}
    
 
 class ActivateJobSeekers(View):
@@ -265,20 +277,20 @@ class ActivateJobSeekers(View):
     
     def get(self, request, pk, *args, **kwargs):
         seekerprofile = JobSeekers.objects.all().get(jobseekerid=pk)
-        return TemplateResponse(request, self.template_name,{'jobseekers': seekerprofile})
+        return TemplateResponse(request, self.template_name, {'jobseekers': seekerprofile})
     
     def post(self, request, pk, *args, **kwargs):
         seekerprofile = JobSeekers.objects.all().get(jobseekerid=pk)
         seekerprofile.status = 1
         seekerprofile.save()
         
-        #deactivate the user attached to the jobseeker profile
+        # deactivate the user attached to the jobseeker profile
         matcher_user = Users.objects.all().get(userid=seekerprofile.userid.userid)
-        #matcher_user.authid.is_active = 0
+        # matcher_user.authid.is_active = 0
         User.objects.filter(pk=matcher_user.authid.id).update(is_active=1)
-        #return HttpResponse(pk)
+        # return HttpResponse(pk)
         return HttpResponseRedirect('/matcher/jobseekers')
-        #return TemplateResponse(request, self.template_nam,{}
+        # return TemplateResponse(request, self.template_nam,{}
   
 
 # Education
@@ -367,14 +379,15 @@ class JobsView(ListView):
             matcherUser = Users.objects.all().get(authid=request.user.pk)
         except:
             matcherUser = None
+        
         if (matcherUser):
-            if(matcherUser.usertype==2):#if employer only list the companies job
+            if(matcherUser.usertype == 2):  # if employer only list the companies job
                 try:
                     model = Jobs.objects.all().filter(companyid=matcherUser.companyid)
                 except:
                     model = None
         
-        return TemplateResponse(request, self.template_name,{'matchUser': matcherUser, 'object_list': model})
+        return TemplateResponse(request, self.template_name, {'matchUser': matcherUser, 'object_list': model})
   
     
     
@@ -408,7 +421,7 @@ def home(request):
 @login_required
 def myProfile(request):
     matcherUser = Users.objects.all().get(authid=request.user.pk)
-    #if the user is a jobseeker and hasnt completed profile, display page to complete profile
+    # if the user is a jobseeker and hasnt completed profile, display page to complete profile
     if(matcherUser.usertype == 1):
         # check if the jobseeker profile already exists
         try:
@@ -418,7 +431,7 @@ def myProfile(request):
         return render_to_response('jobseeker/profile.html', {'user': request.user, 'matchUser': matcherUser, 'seekerprofile': seekerprofile})
     if (matcherUser.usertype == 2):
         return render_to_response('employer/profile.html', {'user': request.user, 'matchUser': matcherUser})
-    #if the user is an employer and hasnt completed profile, display page to create company profile
+    # if the user is an employer and hasnt completed profile, display page to create company profile
     return render_to_response('home.html', {'user': request.user, 'matchUser': matcherUser})
 
 def register(request):
@@ -460,7 +473,7 @@ def register(request):
         else:
             form = UsersForm 
     except Exception, e:
-        #raise Http404("Error Creating Account. Please try again or contact the administrator" + str(e))
+        # raise Http404("Error Creating Account. Please try again or contact the administrator" + str(e))
         return render_to_response('register.html', {'form':form, 'err': str(e)}, context_instance=RequestContext(request))
     
     return render_to_response('register.html', {'form':form}, context_instance=RequestContext(request))
@@ -487,7 +500,7 @@ def createcompany(request):
             c.industryid = form.cleaned_data['industryid']
             c.save()
 
-            #Add Company to user
+            # Add Company to user
             muser = Users.objects.all().get(authid=request.user.pk)
             muser.companyid = c
             muser.profilecompleted = 1
@@ -501,7 +514,7 @@ def createcompany(request):
             context_instance=context)
 
 
-class UpdateCompany(LoginRequiredMixin,UpdateView):
+class UpdateCompany(LoginRequiredMixin, UpdateView):
     template_name = 'company_create.html'
     model = Companies
     form_class = CompaniesForm
@@ -509,21 +522,106 @@ class UpdateCompany(LoginRequiredMixin,UpdateView):
 
 
 def jobSeekersAdminView(request, pk):
-                try:
-                    seekerprofile = JobSeekers.objects.all().get(jobseekerid=pk)
-                except:
-                    seekerprofile = None
-                
-                return render_to_response('jobseeker/adminview.html', {'user': request.user, 'seekerprofile': seekerprofile})
+    try:
+        seekerprofile = JobSeekers.objects.all().get(jobseekerid=pk)
+    except:
+        seekerprofile = None
+    
+    return render_to_response('jobseeker/adminview.html', {'user': request.user, 'seekerprofile': seekerprofile})
 
 
 def jobDetails(request, pk):
-                try:
-                    job = Jobs.objects.all().get(jobid=pk)
-                except:
-                    job = None
+    try:
+        job = Jobs.objects.all().get(jobid=pk)
+    except:
+        job = None
+    
+    try:
+        shortlisted = JobApplicantMatches.objects.all().filter(jobid=job.jobid)
+    except:
+        shortlisted = None
+            
+    
+    return render_to_response('jobs/adminview.html', {'user': request.user, 'job': job, 'shortlisted': shortlisted})
+
+@login_required
+def matchJob(request, pk):
+    
+    form = OutMessagesForm()
+    context = RequestContext(request)
+    try:
+        job = Jobs.objects.all().get(jobid=pk)
+    except:
+        job = None
+        
+    try:
+        candidates = JobSeekers.objects.all().filter(skills__icontains=job.skills, educationid=job.educationid,
+                                             yearsofexperience__gte=job.yearsofexperience)
+    except Exception, e:
+        candidates = None
+        return HttpResponse(str(e))
+    
+    
+    # if send messages
+    if request.method == "POST":
+        form = OutMessagesForm(request.POST)
+        if(form.is_valid()):
+            for candicate in candidates: 
+                name = candicate.firstname + " " + candicate.lastname
+                s = string.uppercase + string.digits
+                uniqueid = ''.join(random.sample(s, 6))
+                # return HttpResponse(form.cleaned_data['channelid'].channelid)
+                if(form.cleaned_data['channelid'].channelid == 1):  # send email
+                    messageContent = ''' <span style="font-family:Trebuchet MS, Verdana, Arial; font-size:17px; font-weight:bold;">Dear 
+                    ''' + name + '''!</span><br /> <p>Your credentials have matched the position of: ''' + job.title + ''' offered by the company 
+                    ''' + job.companyid.companyname + ''', <p>If your are interested in this position please reply to this email 
+                    starting with the characters ''' + uniqueid + ''' <br/><p>Good Luck!</p>'''
+                             
+                    email = EmailMessage('Dumaworks - Job Opportunity', messageContent, to=[candicate.userid.emailaddress]) 
+                    
+                    email.content_subtype = 'html'
+                    email.send()
+                      
+                else:  # send sms
+                    messageContent = '''Dear ''' + name + ''',  You've been shortlisted for the position of ''' + job.title + ''' 
+                    at ''' + job.companyid.companyname + ''', If interested please reply via sms
+                    starting with the characters ''' + uniqueid + '''. '''
+                    from smslogger.models import LoggedMessage
+                    ll = LoggedMessage()
+                    ll.text = messageContent
+                    ll.identity = candicate.mobilenumber
+                    ll.direction = LoggedMessage.DIRECTION_OUTGOING
+                    ll.status = LoggedMessage.STATUS_PENDING
+                    ll.save()
                 
-                return render_to_response('jobs/adminview.html', {'user': request.user, 'job': job})
+                # log record into applicantsmatch
+                match = JobApplicantMatches()
+                match.jobid = job
+                match.generatedbyuserid = getCurrentUser(request.user.pk)
+                match.jobseekerid = candicate
+                match.datecreated = timezone.now()
+                match.datemodified = timezone.now()
+                match.save()
+                
+                message = OutMessages()
+                message.channelid = form.cleaned_data['channelid']
+                message.jobid = job
+                message.jobseekerid = candicate
+                message.uniqueid = uniqueid
+                message.message = messageContent
+                message.datecreated = timezone.now()
+                message.datemodified = timezone.now()
+                message.jobapplicantmatchid_id = match.jobapplicantmatchid
+                message.save()
+                
+                
+        
+        return render_to_response('jobs/adminview.html', {'user': request.user, 'job': job}) 
+            
+                
+
+    return render_to_response('jobs/matches.html', {'user': request.user, 'job': job, 'candidates': candidates, 'form': form}, context_instance=context)
+
 
 
 @login_required
@@ -540,7 +638,9 @@ def createjob(request):
             j.companyid = user.companyid
             j.yearsofexperience = form.cleaned_data['yearsofexperience']
             j.educationid = form.cleaned_data['educationid']
-            j.skills = form.cleaned_data['skills']
+            z = str(form.cleaned_data['skills'])
+            ll = z.replace('[','').replace('<','').replace('Skillset: ','').replace(']','').replace('>','')
+            j.skills = ll
             j.openingsavailable = form.cleaned_data['openingsavailable']
             j.deadline = form.cleaned_data['deadline']
             j.createdBy = user
@@ -552,3 +652,8 @@ def createjob(request):
 
     return render_to_response('create_job.html', {'form':form},
             context_instance=context)
+
+
+class CompanyView(ListView):
+    template_name = 'company.html'
+    model = Companies

@@ -84,6 +84,7 @@ class ChannelsForm(forms.ModelForm):
 class OutMessagesForm(forms.ModelForm):
     class Meta:
         model = OutMessages
+        fields = ['channelid']
 
 
 class JobApplicantMatchesForm(forms.ModelForm):

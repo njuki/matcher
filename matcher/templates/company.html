@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Companies Registered{% endblock %}
+
+{% block content %}
+<div class="row">
+        <div class="col-lg-10">
+<h3>Companies Registered</h3></div>
+      
+      </div>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Industry</th>
+        <th>Email</th>
+        <th>Telephone</th>
+        <th>Edit</th>
+    </tr>
+    {% for company in object_list %}
+        <tr>
+            <td>{{ company.companyid }}</td>
+            <td>{{ company.companyname }}</td>
+            <td>{{ company.industryid.industryname }}</td>
+            <td>{{ company.emailaddress }}</td>
+            <td>{{ company.telephone }}</td>
+            <td><a href="{% url 'company_update' company.companyid %}" class="btn">Edit</a></td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

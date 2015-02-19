@@ -86,5 +86,9 @@ urlpatterns = patterns('',
 	#Company CRUD
     url(r'^company/create$', views.createcompany, name='create_company'), #listView
     url(r'^company/edit/(?P<pk>\d+)$', views.UpdateCompany.as_view(), name='company_update'), #listView
+    
+    url(r'^matchjob/(?P<pk>\d+)$', views.matchJob, name='match_job'),
+	url(r'^companies/$', views.CompanyView.as_view(), name='company_list'), #listView
+
 
 )
