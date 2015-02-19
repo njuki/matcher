@@ -7,6 +7,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 class CompaniesForm(forms.ModelForm):
     class Meta:
         model = Companies
+        exclude = ('status',)
 
 
 class IndustriesForm(forms.ModelForm):
@@ -35,7 +36,14 @@ class JobTypesForm(forms.ModelForm):
 class JobsForm(forms.ModelForm):
     class Meta:
         model = Jobs
+        exclude = ['companyid', 'createdBy']
 
+
+    def __init__(self, *args, **kwargs):
+        super(JobsForm, self).__init__(*args, **kwargs)
+        self.fields['deadline'].widget.attrs.update({'class': 'datepicker'})
+        self.fields['skills'].widget.attrs.update({'class': 'chosen-select'})
+        self.fields['skills'] = forms.ModelMultipleChoiceField(queryset=Skillset.objects.all(), widget=FilteredSelectMultiple("", is_stacked=False))
 
 class QualificationParametersForm(forms.ModelForm):
     class Meta:

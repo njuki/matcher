@@ -9,22 +9,38 @@ class Industries(models.Model):
     datemodified = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(default=1)
     
-class Companies(models.Model):  
-    companyid = models.AutoField(primary_key=True, unique=True, db_index=True)
-    companyname = models.TextField(verbose_name="Company Name")
-    emailaddress = models.EmailField(max_length=150, verbose_name="Company Email")
-    telephone = models.CharField(max_length=15, verbose_name="Telephone")
-    physicaladdress = models.TextField(verbose_name="Physical Address")
-    industryid = models.ForeignKey('Industries', verbose_name="Industry")
+    def __unicode__(self):
+        return self.industryname
+
+
+class Companies(models.Model):
+    STATUS_ACTIVE = 1
+    STATUS_INACTIVE = 0
+
+    STATUS_CHOICES = (
+        (STATUS_ACTIVE, "Active"),
+        (STATUS_INACTIVE, "Inactive"))
+
+    companyid = models.AutoField(primary_key=True, unique=True, blank=False, db_index=True)
+    companyname = models.TextField("Company Name")
+    emailaddress = models.EmailField("Email Address", max_length=150, )
+    telephone = models.CharField("Telephone", max_length=15,)
+    physicaladdress = models.TextField("Physical Address")
+    industryid = models.ForeignKey('Industries', verbose_name="Industry", blank=False,)
     datecreated = models.DateTimeField(auto_now=True)
     datemodified = models.DateTimeField(auto_now_add=True)
-    status = models.IntegerField(default=1)
-    
+    status = models.IntegerField(default=STATUS_ACTIVE, choices=STATUS_CHOICES)
+
+    def __unicode__(self):
+        return self.companyname
 
 class Users(models.Model):
+
+    JOB_SEEKER = 1
+    EMPLOYEE = 2
     USER_TYPES_CHOICES = (
-                          (1, 'Job Seeker'),
-                          (2, 'Employer')
+                          (JOB_SEEKER, 'Job Seeker'),
+                          (EMPLOYEE, 'Employer')
                           )
 #     if(user.is_staff):
 #         USER_TYPES_CHOICES.append((3, 'Staff'))
@@ -45,7 +61,9 @@ class Users(models.Model):
     lastlogindate = models.DateTimeField(null=True)
     mobilenumber = models.CharField(max_length=15, verbose_name="Mobile Number")
     usertype = models.PositiveIntegerField(choices=USER_TYPES_CHOICES, verbose_name="Please select type of account")
-    
+
+    def __unicode__(self):
+        return self.firstname.upper()+" "+self.lastname.upper()
 
 
 
@@ -69,18 +87,18 @@ class Jobs(models.Model):
     """
     The various vacancies as posted by companies
     """
-    
-    title = models.CharField(max_length=255)
-    shortdescription = models.CharField(max_length=255)
-    detaileddescription = models.TextField()
+
+    title = models.CharField("Job Title", max_length=255)
+    shortdescription = models.CharField("Short Description",max_length=255, blank=False)
+    detaileddescription = models.TextField("Long Description")
     jobid = models.AutoField(primary_key=True)
     companyid = models.ForeignKey('Companies')
     createdBy = models.ForeignKey('Users')
-    deadline = models.DateField()
-    openingsavailable = models.IntegerField()
-    yearsofexperience = models.FloatField()
-    skills =  skills =  models.TextField(verbose_name="Skill set")
-    educationid = models.ForeignKey('Education')    
+    deadline = models.DateField("Application Deadline",blank=True)
+    openingsavailable = models.IntegerField("No of Opening", blank=False)
+    yearsofexperience = models.FloatField("Years of Experience", blank=False)
+    skills =  models.TextField("Skill set", blank=False)
+    educationid = models.ForeignKey('Education', verbose_name="Education", blank=False)
     datecreated = models.DateTimeField(auto_now=True)
     datemodified = models.DateTimeField(auto_now=True, auto_now_add=True)
     

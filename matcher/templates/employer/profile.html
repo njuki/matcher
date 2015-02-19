@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Company Profile{% endblock %}
+
+{% block content %}
+{%  if not matchUser.companyid or matchUser.profilecompleted == 2 %}
+      <div class="row">
+          <div class="col-lg-10">
+      <div class="alert alert-warning alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Note!</strong>
+    Your profile is incomplete, please create a company in order to post jobs.
+
+</div>
+<div class="col-lg-2"> <p><a class="btn btn-success new-btn" href="/matcher/company/create">Create Company Profile</a></p>
+          </div>
+</div>
+{%  else %}
+
+<div class="col-lg-2"> <p><a class="btn btn-success new-btn" href="{% url 'create_job' %}">Post New Job</a></p>
+    </div>
+    <div class="col-lg-2"> <p><a class="btn btn-danger new-btn" href="/matcher/company/edit/{{ matchUser.companyid.pk }}">Update Company Profile</a></p>
+        </div>
+</div>
+<table class="table table-striped">
+    <tr class="default"><th>Company Name</th><td>{{ matchUser.companyid.companyname }}</td></tr>
+    <tr class="default"><th>Email</th><td>{{ matchUser.companyid.emailaddress }}</td></tr>
+    <tr class="default"><th>Telephone Number</th><td>{{ matchUser.companyid.telephone }}</td></tr>
+    <tr class="default"><th>Account Status</th><td>{{ matchUser.companyid.get_status_display }}</td></tr>
+</table>
+{% endif %}
+
+</div>
+{% endblock %}

@@ -7,7 +7,7 @@ from matcher import views
 
 urlpatterns = patterns('',
     url(r'^home', 'matcher.views.home', name='home'),
-     url(r'^profile', 'matcher.views.myProfile', name='profile'),
+    url(r'^profile', 'matcher.views.myProfile', name='profile'),
     url(r'^register/$', views.register, name='register'),
     url(r'^register/success', views.registersuccess),
     #authentication
@@ -76,7 +76,15 @@ urlpatterns = patterns('',
     url(r'^jobseekers/view/(?P<pk>\d+)$', views.jobSeekersAdminView, name='seeker_view'),
     url(r'^jobseekers/deactivate/(?P<pk>\d+)$', views.DeactivateJobSeekers.as_view(), name='seeker_deactivate'),
     url(r'^jobseekers/activate/(?P<pk>\d+)$', views.ActivateJobSeekers.as_view(), name='seeker_activate'),
-    
-     #jobs manage
+
+    #Jobs manage
+    url(r'^job/create$', views.createjob, name='create_job'),
     url(r'^joblist$', views.JobsView.as_view(), name='jobslist_view'),
+    url(r'^joblistview/(?P<pk>\d+)$', views.jobDetails, name='joblist_detailed'),
+
+
+	#Company CRUD
+    url(r'^company/create$', views.createcompany, name='create_company'), #listView
+    url(r'^company/edit/(?P<pk>\d+)$', views.UpdateCompany.as_view(), name='company_update'), #listView
+
 )

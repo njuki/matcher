@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h3 class="text-info">Create New Job Posting</h3>
+    <div id="register">
+        <form class="form-horizontal" action="{% url 'create_job' %}" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="control-group">
+        <label class="control-label">{{ field.label_tag }}</label>
+        <div class="controls">{{ field }}</div>
+        {% if field.errors %}
+        <span class="text-danger">{{ field.errors }}</span>
+        {% endif %}
+        </div>
+    {% endfor %}
+    <br/>
+    <input type="submit" value="Submit" class="btn btn-success" />
+</form>
+    </div>
+{% endblock %}

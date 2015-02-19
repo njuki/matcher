@@ -1,30 +1,24 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.response import TemplateResponse
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from forms import UsersForm, LoginForm, IndustriesForm, JobTypesForm, ChannelsForm
-from forms  import UsersForm, QualificationParametersForm, JobSeekersForm, ExperienceLevelForm, SkillsetForm, EducationForm
+from django.http import HttpResponse, HttpResponseRedirect
+from forms import *
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.http import Http404
 from django.shortcuts import redirect
-from matcher.models import Industries, JobTypes, Channels, Users, QualificationParameters, JobSeekers
-from matcher.models import Education, Skillset, ExperienceLevel, Jobs
+from matcher.models import *
 from django.conf import settings  # import the settings file
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
-# import generic views 
-from django.views.generic import ListView
-from django.views.generic import CreateView
-from django.views.generic import UpdateView
-from django.views.generic import DeleteView
-from django.views.generic import View
+from django.contrib.auth.decorators import login_required
+
+# import generic views
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
 from django.core.urlresolvers import reverse_lazy
 import random, string
-import utils
-
+from utils import *
 
 # import emailing library
 from django.core.mail import EmailMessage
@@ -199,7 +193,7 @@ class JobSeekersCreate(CreateView):
     
     def get_initial(self):
         super(JobSeekersCreate, self).get_initial()
-        user = utils.getCurrentUser(self.request.user.pk)
+        user = getCurrentUser(self.request.user.pk)
         self.initial = {"firstname": user.firstname, "lastname": user.lastname, "mobilenumber": user.mobilenumber}
 
         return self.initial
@@ -366,7 +360,23 @@ class DeleteExperience(DeleteView):
 # Jobs
 class JobsView(ListView):
     template_name = 'jobslist.html'
-    model = Jobs
+       
+    def get(self, request, *args, **kwargs):
+        model = Jobs.objects.all()
+        try:
+            matcherUser = Users.objects.all().get(authid=request.user.pk)
+        except:
+            matcherUser = None
+        if (matcherUser):
+            if(matcherUser.usertype==2):#if employer only list the companies job
+                try:
+                    model = Jobs.objects.all().filter(companyid=matcherUser.companyid)
+                except:
+                    model = None
+        
+        return TemplateResponse(request, self.template_name,{'matchUser': matcherUser, 'object_list': model})
+  
+    
     
     
     
@@ -386,32 +396,30 @@ def home(request):
                         seekerprofile = None
                 
                         return render_to_response('jobseeker/profile.html', {'user': request.user, 'matchUser': matcherUser, 'seekerprofile': seekerprofile})
-            
+                if (matcherUser.usertype == 2):
+                    return render_to_response('employer/profile.html', {'user': request.user, 'matchUser': matcherUser})
+
             # if the user is an employer and hasnt completed profile, display page to create company profile
         else:
             matcherUser = None
             
         return render_to_response('home.html', {'user': request.user, 'matchUser': matcherUser})
 
-
+@login_required
 def myProfile(request):
-        if(request.user.is_authenticated()):
-            matcherUser = Users.objects.all().get(authid=request.user.pk)
-            # if the user is a jobseeker and hasnt completed profile, display page to complete profile
-            if(matcherUser.usertype == 1):
-                # check if the jobseeker profile already exists
-                try:
-                    seekerprofile = JobSeekers.objects.all().get(userid=matcherUser.userid)
-                except:
-                    seekerprofile = None
-                
-                return render_to_response('jobseeker/profile.html', {'user': request.user, 'matchUser': matcherUser, 'seekerprofile': seekerprofile})
-            
-            # if the user is an employer and hasnt completed profile, display page to create company profile
-        else:
-            matcherUser = None
-            
-        return render_to_response('jobseeker/profile.html', {'user': request.user, 'matchUser': matcherUser})
+    matcherUser = Users.objects.all().get(authid=request.user.pk)
+    #if the user is a jobseeker and hasnt completed profile, display page to complete profile
+    if(matcherUser.usertype == 1):
+        # check if the jobseeker profile already exists
+        try:
+            seekerprofile = JobSeekers.objects.all().get(userid=matcherUser.userid)
+        except:
+            seekerprofile = None
+        return render_to_response('jobseeker/profile.html', {'user': request.user, 'matchUser': matcherUser, 'seekerprofile': seekerprofile})
+    if (matcherUser.usertype == 2):
+        return render_to_response('employer/profile.html', {'user': request.user, 'matchUser': matcherUser})
+    #if the user is an employer and hasnt completed profile, display page to create company profile
+    return render_to_response('home.html', {'user': request.user, 'matchUser': matcherUser})
 
 def register(request):
     err = ''
@@ -463,7 +471,41 @@ def registersuccess(request):
 
     return render_to_response('registersuccess.html', d)
 
+@login_required
+@is_employee_nocompany
+def createcompany(request):
+    context = RequestContext(request)
 
+    if request.method == "POST":
+        form = CompaniesForm(request.POST)
+        if(form.is_valid()):
+            c = Companies()
+            c.companyname = form.cleaned_data['companyname']
+            c.emailaddress = form.cleaned_data['emailaddress']
+            c.telephone = form.cleaned_data['telephone']
+            c.physicaladdress = form.cleaned_data['physicaladdress']
+            c.industryid = form.cleaned_data['industryid']
+            c.save()
+
+            #Add Company to user
+            muser = Users.objects.all().get(authid=request.user.pk)
+            muser.companyid = c
+            muser.profilecompleted = 1
+            muser.save()
+
+            return redirect('/matcher/home')
+    else:
+        form = CompaniesForm
+
+    return render_to_response('company_create.html', {'form':form},
+            context_instance=context)
+
+
+class UpdateCompany(LoginRequiredMixin,UpdateView):
+    template_name = 'company_create.html'
+    model = Companies
+    form_class = CompaniesForm
+    success_url = '/matcher/home'
 
 
 def jobSeekersAdminView(request, pk):
@@ -473,5 +515,40 @@ def jobSeekersAdminView(request, pk):
                     seekerprofile = None
                 
                 return render_to_response('jobseeker/adminview.html', {'user': request.user, 'seekerprofile': seekerprofile})
-    
 
+
+def jobDetails(request, pk):
+                try:
+                    job = Jobs.objects.all().get(jobid=pk)
+                except:
+                    seekerprofile = None
+                
+                return render_to_response('jobseeker/adminview.html', {'user': request.user, 'seekerprofile': seekerprofile})
+
+
+@login_required
+def createjob(request):
+    context = RequestContext(request)
+    user = getCurrentUser(request.user.pk)
+    if request.method == "POST":
+        form = JobsForm(request.POST)
+        if(form.is_valid()):
+            j = Jobs()
+            j.title = form.cleaned_data['title']
+            j.shortdescription = form.cleaned_data['shortdescription']
+            j.detaileddescription = form.cleaned_data['detaileddescription']
+            j.companyid = user.companyid
+            j.yearsofexperience = form.cleaned_data['yearsofexperience']
+            j.educationid = form.cleaned_data['educationid']
+            j.skills = form.cleaned_data['skills']
+            j.openingsavailable = form.cleaned_data['openingsavailable']
+            j.deadline = form.cleaned_data['deadline']
+            j.createdBy = user
+            j.save()
+
+            return redirect('/matcher/jobs')
+    else:
+        form = JobsForm
+
+    return render_to_response('create_job.html', {'form':form},
+            context_instance=context)

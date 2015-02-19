@@ -6,8 +6,10 @@
 <div class="row">
         <div class="col-lg-10">
 <h3>Jobs Listing</h3></div>
-      <div class="col-lg-2"> <p><a class="btn btn-info new-btn" href="/matcher/industries/create">Create New Industry</a></p>
+{% if matchUser.usertype == 2 %}
+      <div class="col-lg-2"> <p><a class="btn btn-info new-btn" href="/matcher/job/create">Post New Job</a></p>
           </div>
+          {% endif %}
       </div>
 <table class="table">
     <tr>
@@ -21,11 +23,11 @@
     {% for job in object_list %}
         <tr>
             <td>{{ job.title }}</td>
-            <td>{{ industry.industryname }}</td>
-            <td>{{ industry.industrydescription }}</td>
-            <td>{{ industry.datecreated }}</td>
-            <td><a href="{% url 'industry_edit' industry.industryid %}" class="btn">Edit</a></td>
-            <td><a href="{% url 'industry_delete' pk=industry.industryid %}" class="btn">Delete</a></td>
+            <td>{{ job.shortdescription }}</td>
+            <td>{{ job.companyid.companyname }}</td>
+            <td>{{ job.openingsavailable }}</td>
+            <td>{{ job.deadline }}</td>
+            <td><a href="{% url 'joblist_detailed' job.jobid %}" class="btn"><span class="glyphicon glyphicon-search"></span>View</a></td>
         </tr>
     {% endfor %}
 </table>

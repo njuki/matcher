@@ -147,3 +147,6 @@ class InboxAdmin(admin.ModelAdmin):
 
 admin.site.register(Inbox, InboxAdmin)
 
+
+admin.site.register(Education)
+admin.site.register(Skillset)

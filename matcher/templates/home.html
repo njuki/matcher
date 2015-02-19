@@ -44,7 +44,7 @@
           {% if user.is_authenticated %}
           {% if user.is_staff %}
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administrative Tools <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span> Administrative Tools <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="/matcher/industries">Industries</a></li>
                 <li><a href="/matcher/jobTypes">Job Types</a></li>
@@ -57,11 +57,11 @@
                 <li><a href="/matcher/experience">Work Experience</a></li>
               </ul>
             </li>
-            <li><a href="/matcher/users">Users</a></li>
-            <li><a href="/matcher/companies">Companies</a></li>
-            <li><a href="/matcher/jobseekers">Job Seekers</a></li>
+            <li><a href="/matcher/users"><span class="glyphicon glyphicon-user"></span> Users</a></li>
+            <li><a href="/matcher/companies"><span class="glyphicon glyphicon-folder-close"></span> Companies</a></li>
+            <li><a href="/matcher/jobseekers"><span class="glyphicon glyphicon-hdd"></span> Job Seekers</a></li>
            {% endif %}
-            <li><a href="{% url 'jobslist_view' %}">Job Postings</a></li>
+            <li><a href="{% url 'jobslist_view' %}"><span class="glyphicon glyphicon-bell"></span> Job Postings</a></li>
            {% endif %}
           </ul>
       	<div class="navbar-right">
@@ -73,6 +73,9 @@
                 <li><a href="{% url 'django.contrib.auth.views.password_change' %}">Change Password</a></li>
                   {% if matchUser.usertype == 1 %}
                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                   
+                  {% elif matchUser.usertype == 2 %}
+                   <li><a href="{% url 'home' %}">My Profile</a></li>
                   {% endif %}
                 <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
               </ul>
