@@ -221,7 +221,7 @@ class Channels(models.Model):
     name = models.CharField(unique=True, max_length=255, verbose_name='Channel Name')
     description = models.TextField()
     channelid = models.AutoField(primary_key=True)
-    #status = models.SmallIntegerField(choices=STATUS_CHOICES, default=1)
+    status = models.SmallIntegerField(choices=STATUS_CHOICES, default=1)
     def __unicode__(self):
         return self.name
 
