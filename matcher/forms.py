@@ -21,6 +21,11 @@ class UsersForm(forms.ModelForm):
         model = Users
         fields = ['firstname','lastname', 'emailaddress', 'mobilenumber','usertype']
 
+class StaffForm(forms.ModelForm):
+    class Meta:
+        model = Users
+        fields = ['firstname','lastname', 'emailaddress', 'mobilenumber']
+
 class LoginForm(forms.ModelForm):
     class Meta:
         model = Users

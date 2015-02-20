@@ -107,7 +107,7 @@ class UsersView(ListView):
 class UsersCreate(CreateView):
     template_name = 'create.html'
     model = Users
-    form_class = UsersForm
+    form_class = StaffForm
     
     success_url = '/matcher/users'
   
@@ -116,12 +116,14 @@ class UsersCreate(CreateView):
             s = string.lowercase + string.digits
             password = ''.join(random.sample(s, 10))
             user = User.objects.create_user(form_class.cleaned_data['emailaddress'], form_class.cleaned_data['emailaddress'], password)
-            user.first_name = form.cleaned_data['firstname']
-            user.last_name = form.cleaned_data['lastname']
+            user.first_name = form_class.cleaned_data['firstname']
+            user.last_name = form_class.cleaned_data['lastname']
+            user.is_staff = 1
             user.save()
             
             form_class.instance.authid = user
             form_class.instance.profilecompleted = 2
+            form_class.instance.usertype = 3
             name = form_class.cleaned_data['firstname'] + ' ' + form_class.cleaned_data['lastname']
             username = form_class.cleaned_data['emailaddress']
             message = ''' <span style="font-family:Trebuchet MS, Verdana, Arial; font-size:17px; font-weight:bold;">Hello ''' + name + '''!</span>
